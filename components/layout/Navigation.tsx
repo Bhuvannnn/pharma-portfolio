@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   // Handle scroll effect
   useEffect(() => {
@@ -20,26 +22,23 @@ const Navigation = () => {
 
   // Smooth scroll function
   const scrollToSection = (sectionId: string) => {
-    setIsOpen(false); // Close mobile menu
+    setIsOpen(false);
+    if (pathname !== '/') {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const menuItems = [
-    { name: 'Home', type: 'scroll', to: 'hero' },
-    { name: 'Projects', type: 'link', to: '/projects' },
-    { name: 'Experience', type: 'scroll', to: 'experience' },
-    { name: 'Contact', type: 'scroll', to: 'contact' }
-  ];
-
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/80 backdrop-blur-md shadow-md' : 'bg-transparent'
+        scrolled ? 'bg-white/80 backdrop-blur-md shadow-md' : 'bg-white'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,42 +50,40 @@ const Navigation = () => {
             transition={{ duration: 0.5 }}
             className="flex-shrink-0"
           >
-            <button 
-              onClick={() => scrollToSection('hero')}
-              className="text-2xl font-bold text-gray-900"
+            <Link 
+              href="/"
+              className="text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
             >
               Portfolio
-            </button>
+            </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {menuItems.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  {item.type === 'link' ? (
-                    <Link
-                      href={item.to}
-                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                    >
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => scrollToSection(item.to)}
-                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                    >
-                      {item.name}
-                    </button>
-                  )}
-                </motion.div>
-              ))}
-            </div>
+          <div className="hidden md:flex space-x-8">
+            <Link 
+              href="/"
+              className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+            >
+              Home
+            </Link>
+            <Link 
+              href="/projects"
+              className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+            >
+              Projects
+            </Link>
+            <button
+              onClick={() => scrollToSection('experience')}
+              className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+            >
+              Experience
+            </button>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+            >
+              Contact
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -107,30 +104,35 @@ const Navigation = () => {
             opacity: isOpen ? 1 : 0,
             height: isOpen ? 'auto' : 0
           }}
-          transition={{ duration: 0.3 }}
           className="md:hidden overflow-hidden"
         >
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {menuItems.map((item) => (
-              <div key={item.name}>
-                {item.type === 'link' ? (
-                  <Link
-                    href={item.to}
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => scrollToSection(item.to)}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                  >
-                    {item.name}
-                  </button>
-                )}
-              </div>
-            ))}
+            <Link
+              href="/"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              href="/projects"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsOpen(false)}
+            >
+              Projects
+            </Link>
+            <button
+              onClick={() => scrollToSection('experience')}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            >
+              Experience
+            </button>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            >
+              Contact
+            </button>
           </div>
         </motion.div>
       </div>
